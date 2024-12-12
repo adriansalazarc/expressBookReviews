@@ -33,7 +33,7 @@ const authenticatedUser = (username,password)=>{
 }
 
 regd_users.get("/", (req,res) => {
-	return res.status(200).send("Hola " +  + "!");
+	return res.status(200).send("Hola " + req.session.authorization.username + "!");
 })
 
 //only registered users can login
@@ -66,8 +66,19 @@ regd_users.post("/login", (req,res) => {
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
 //Write your code here
-	return res.status(300).json({message: "view reviews Yet to be implemented"});
+	const i = req.params.isbn;
+	const review = req.query.review;
+	const activeUser = req.session.authorization.username;
+
+	books[i].reviews[activeUser] = review;
+
+	return res.status(300).json({message: books[i]});
 });
+
+//TODO delete a review
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+	const i = req.params.isbn;
+})
 
 module.exports.authenticated = regd_users;
 module.exports.isValid = isValid;
