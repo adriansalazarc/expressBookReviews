@@ -9,6 +9,15 @@ let users = [{"username": "Baguette", "password": "lavidaesunalenteja"}];
 
 const isValid = (username)=>{ //returns boolean
 	//write code to check is the username is valid
+	let validusers = users.filter((user) => {
+        return (user.username === username && user.password === password);
+    });
+    // Return true if any valid user is found, otherwise false
+    if (validusers.length > 0) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 const authenticatedUser = (username,password)=>{
@@ -24,7 +33,7 @@ const authenticatedUser = (username,password)=>{
 }
 
 regd_users.get("/", (req,res) => {
-	return res.status(200).send("Hola usuario registrado!");
+	return res.status(200).send("Hola " +  + "!");
 })
 
 //only registered users can login
@@ -54,9 +63,9 @@ regd_users.post("/login", (req,res) => {
 	}
 });
 
-	// Add a book review
+// Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
-	//Write your code here
+//Write your code here
 	return res.status(300).json({message: "view reviews Yet to be implemented"});
 });
 
