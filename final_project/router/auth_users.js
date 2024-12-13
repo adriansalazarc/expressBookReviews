@@ -5,7 +5,10 @@ const jwt = require('jsonwebtoken');
 let books = require("./booksdb.js");
 const regd_users = express.Router();
 
-let users = [{"username": "Baguette", "password": "lavidaesunalenteja"}];
+let users = [
+	{"username": "Baguette", "password": "lavidaesunalenteja"},
+	{"username": "Adrian", "password": "olatomasoladejas"}
+	];
 
 const isValid = (username)=>{ //returns boolean
 	//write code to check is the username is valid
@@ -57,7 +60,7 @@ regd_users.post("/login", (req,res) => {
 		req.session.authorization = {
 			accessToken, username
 		}
-		return res.status(200).send("User successfully logged in");
+		return res.status(200).send("User successfully logged in.\n" + req.session.authorization.username + " welcome back!!");
 	} else {
 		return res.status(208).json({ message: "Invalid Login. Check username and password" });
 	}
@@ -78,6 +81,20 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
 //TODO delete a review
 regd_users.delete("/auth/review/:isbn", (req, res) => {
 	const i = req.params.isbn;
+	const selectedBook = books[i];
+	const activeUser = req.session.authorization.username;
+	let newRevObj = {};
+
+	for(reviewer in selectedBook.reviews){
+		if(reviewer !== activeUser){
+			newRevObj[reviewer] = selectedBook.reviews[reviewer];
+			newRevObj[reviewer].review = selectedBook.reviews[reviewer].review;
+		}
+	}
+
+	books[i].reviews = newRevObj;
+
+	return res.status(300).json({message:"Review succesfully deleted"});
 })
 
 module.exports.authenticated = regd_users;
