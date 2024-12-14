@@ -26,48 +26,97 @@ public_users.post("/register", (req,res) => {
 	res.status(200).json({message: "Username or password not valid"});
 });
 
+let promiseSeeBooks = new Promise((resolve, reject) => {
+	if(books) resolve(books);
+	else reject("The books list is empty")
+})
+
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
 	//Write your code here
-
-	return res.status(300).json({message: JSON.stringify(books)});
+	//res.status(300).json({message: JSON.stringify(books)})
+	promiseSeeBooks.then(
+		(respuesta)=>{
+			res.status(300).json({message: JSON.stringify(respuesta)})
+		},
+		(respuesta)=>{
+			res.status(300).json({message: JSON.stringify(respuesta)})
+		}
+	)
 });//completado
 
-	// Get book details based on ISBN
+
+
+// Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
 	//Write your code here
 	const isbn = req.params.isbn;
-	return res.status(300).json({message: books[isbn]});
+
+	let promiseSeeBook = new Promise((resolve, reject) => {
+		if(books[isbn]) resolve(books[isbn]);
+		else reject("No book found with that isbn")
+	})
+
+	promiseSeeBook.then(
+		(result) => {
+			res.status(300).json({message: result});
+		},
+		(result) => {
+			res.status(300).json({message: result});
+		}
+	)
 });
 
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
 	//Write your code here
 	const author = req.params.author;
-	let booksByAuthor = [];
 
-	for(isbn in books){
-		if(books[isbn].author === author){
-		booksByAuthor.push(books[isbn]);
+	let promiseBooksFromAuthor = new Promise((resolve, reject) => {
+		let booksByAuthor = [];
+		for(isbn in books){
+				if(books[isbn].author == author){
+				booksByAuthor.push(books[isbn]);
+			}
 		}
+		if(booksByAuthor.length > 0) resolve(booksByAuthor);
+		else reject("There are no books form this author")
 	}
-	if(booksByAuthor.length > 0) return res.status(300).json({message: JSON.stringify(booksByAuthor)});
-	else return res.status(300).json({message: "No books found from that author"});
+	)
+
+	promiseBooksFromAuthor.then(
+		(response) => {
+			return res.status(300).json({message: JSON.stringify(response)});
+		},
+		(response) => {
+			return res.status(300).json({message: JSON.stringify(response)});
+		}
+	)
 });
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
 	const title = req.params.title;
-	let booksByTitle = [];
 
-	for(isbn in books){
-		if(books[isbn].title === title){
-		booksByTitle.push(books[isbn]);
+	let promiseBooksWithTitle = new Promise((resolve, reject) => {
+		let booksByTitle = [];
+		for(isbn in books){
+			if(books[isbn].title === title){
+			booksByTitle.push(books[isbn]);
+			}
 		}
-	}
+		if(booksByTitle.length > 0) resolve(booksByTitle);
+		else reject("There are no books with that title");
+	})
 
-	if(booksByTitle.length > 0) return res.status(300).json({message: JSON.stringify(booksByTitle)});
-	else return res.status(300).json({message: "No books found with that title"});
+	promiseBooksWithTitle.then(
+		(response) => {
+			return res.status(300).json({message: JSON.stringify(response)});
+		},
+		(response) => {
+			return res.status(300).json({message: JSON.stringify(response)});
+		}
+	)
 });
 
 //  Get book review
